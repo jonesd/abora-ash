@@ -21,6 +21,7 @@ public class AllTests extends TestCase {
 		suite.addTest(new TestSuite(ContentLeafTest.class));
 		suite.addTest(new TestSuite(RootNodeTest.class));
 		suite.addTest(new TestSuite(SequenceNumberTest.class));
+		suite.addTest(new TestSuite(SplitNodeTest.class));
 		//$JUnit-END$
 		return suite;
 	}

@@ -110,7 +110,7 @@ public int count() {
 //								mappings add: (Array with: selfRegion with: anotherRegion)]]]!
 //
 
-protected SplitNode splitAbout(int newSplit, int elementsPosition) {
+public SplitNode splitAbout(int newSplit, int elementsPosition) {
 	if (elementsPosition < 1 || elementsPosition >= count()) {
 		throw new IndexOutOfBoundsException(String.valueOf(elementsPosition));
 	}

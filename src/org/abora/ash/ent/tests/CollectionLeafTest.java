@@ -6,10 +6,15 @@
 
 package org.abora.ash.ent.tests;
 
+import java.util.List;
+
+import org.abora.ash.content.BeCollectionHolder;
+import org.abora.ash.content.BeEdition;
 import org.abora.ash.engine.AboraConverter;
 import org.abora.ash.ent.CollectionLeaf;
+import org.abora.ash.ent.RootNode;
 import org.abora.ash.ent.SequenceNumber;
-
+import org.abora.ash.space.IntegerRegion;
 
 /**
  */
@@ -31,6 +36,20 @@ public class CollectionLeafTest extends EntTestCase {
 	//!CollectionLeafTest categoriesForClass!SUnit! !
 	//!CollectionLeafTest methodsFor!
 	//
+
+	public void testAllEditions() {
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 10, AboraConverter.toAboraContent("abcdef"));
+		BeEdition edition1 = new BeEdition();
+		RootNode root1 = new RootNode(edition1, new SequenceNumber(1), leaf);
+		BeEdition edition2 = new BeEdition();
+		RootNode root2 = new RootNode(edition2, new SequenceNumber(2), leaf);
+
+		List allEditions = leaf.allEditions();
+		assertEquals(2, allEditions.size());
+		assertTrue(allEditions.contains(edition1));
+		assertTrue(allEditions.contains(edition2));
+	}
+
 	//testAllEditions
 	//	| leaf root1 edition1 root2 edition2 |
 	//	leaf := CollectionLeaf 
@@ -51,6 +70,20 @@ public class CollectionLeafTest extends EntTestCase {
 	//	self should: [leaf allEditions includes: edition1].
 	//	self should: [leaf allEditions includes: edition2]!
 	//
+
+	public void testAllRoots() {
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 10, AboraConverter.toAboraContent("abcdef"));
+		BeEdition edition1 = new BeEdition();
+		RootNode root1 = new RootNode(edition1, new SequenceNumber(1), leaf);
+		BeEdition edition2 = new BeEdition();
+		RootNode root2 = new RootNode(edition2, new SequenceNumber(2), leaf);
+
+		List allRoots = leaf.allRoots();
+		assertEquals(2, allRoots.size());
+		assertTrue(allRoots.contains(root1));
+		assertTrue(allRoots.contains(root2));
+	}
+
 	//testAllRoots
 	//	| leaf root1 root2 |
 	//	leaf := CollectionLeaf 
@@ -146,6 +179,18 @@ public class CollectionLeafTest extends EntTestCase {
 	//		do: do.
 	//	self should: [out = '']!
 	//
+
+	public void testCount() {
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 10, AboraConverter.toAboraContent("hello"));
+		assertEquals(5, leaf.count());
+	}
+
+	public void testCountRegion() {
+		BeCollectionHolder holder = new BeCollectionHolder(AboraConverter.toAboraContent("Hello"));
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 10, holder, IntegerRegion.startExtent(1, 2));
+		assertEquals(2, leaf.count());
+	}
+
 	//testCount
 	//	| leaf |
 	//	leaf := CollectionLeaf 
@@ -157,7 +202,7 @@ public class CollectionLeafTest extends EntTestCase {
 
 	public void testCreate() {
 		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(3), 2, AboraConverter.toAboraContent("hello"));
-//TODO		assertEquals("hello", AboraConverter.toJavaString(leaf.getElements()));
+		//TODO		assertEquals("hello", AboraConverter.toJavaString(leaf.getElements()));
 		assertEquals(new SequenceNumber(3), leaf.getBranch());
 		assertEquals(2, leaf.getStartPosition());
 	}
@@ -172,6 +217,17 @@ public class CollectionLeafTest extends EntTestCase {
 	//	self should: [leaf branch  = 3].
 	//	self should: [leaf startPosition = 2]!
 	//
+
+	public void testDuplicateFor() {
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 1, AboraConverter.toAboraContent("hello"));
+		try {
+			leaf.duplicateFor(new SequenceNumber(1));
+			fail();
+		} catch (UnsupportedOperationException e) {
+			assertEquals("duplicateFor", e.getMessage());
+		}
+	}
+
 	//testDuplicateFor
 	//	| leaf |
 	//	leaf := CollectionLeaf 
@@ -310,6 +366,13 @@ public class CollectionLeafTest extends EntTestCase {
 	//				elements: 'hello' asAboraContent.
 	//	self should: [leaf isMinNodeFor: 1]!
 	//
+
+	public void testMaxNode() {
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 1, AboraConverter.toAboraContent("hello"));
+		assertSame(leaf, leaf.maxNode());
+	}
+
+
 	//testMaxNode
 	//	| leaf |
 	//	leaf := CollectionLeaf 
@@ -318,6 +381,12 @@ public class CollectionLeafTest extends EntTestCase {
 	//				elements: 'hello' asAboraContent.
 	//	self should: [leaf maxNode == leaf]!
 	//
+	
+	public void testMinNode() {
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 1, AboraConverter.toAboraContent("hello"));
+		assertSame(leaf, leaf.minNode());
+	}
+	
 	//testMinNode
 	//	| leaf |
 	//	leaf := CollectionLeaf 
@@ -559,6 +628,35 @@ public class CollectionLeafTest extends EntTestCase {
 	//	self should: [root child == leaf].
 	//	self should: [leaf parents = (OrderedCollection with: root)]!
 	//
+
+	public void testSplitAboutBadAbout() {
+		CollectionLeaf leaf = new CollectionLeaf(new SequenceNumber(1), 1, AboraConverter.toAboraContent("hello"));
+		try {
+			leaf.splitAbout(1, -1);
+			fail("-1");		
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals("-1", e.getMessage());
+		}
+		try {
+			leaf.splitAbout(1, 0);
+			fail("0");		
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals("0", e.getMessage());
+		}
+		try {
+			leaf.splitAbout(1, 5);
+			fail("5");		
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals("5", e.getMessage());
+		}
+		try {
+			leaf.splitAbout(1, 6);
+			fail("6");		
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals("6", e.getMessage());
+		}
+	}
+
 	//testSplitAboutBadAbout
 	//	| root leaf splitNode |
 	//	leaf := CollectionLeaf 

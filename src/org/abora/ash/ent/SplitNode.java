@@ -142,7 +142,7 @@ public class SplitNode extends ChildNode {
 		return left.count() + right.count();
 	}
 
-	protected void setDspForChild(int dsp, EntNode node) {
+	public void setDspForChild(int dsp, EntNode node) {
 		assertIsChild(node);
 		if (left == node) {
 			leftDsp = dsp;
@@ -157,7 +157,7 @@ public class SplitNode extends ChildNode {
 	//		right == node ifTrue: [self rightDsp: dsp]!
 	//
 
-	protected int dspForChild(EntNode node) {
+	public int dspForChild(EntNode node) {
 		if (left == node) {
 			return getLeftDsp();
 		} else if (right == node) {
@@ -223,6 +223,11 @@ public class SplitNode extends ChildNode {
 	//	invertDsp: dsp
 	//		^dsp negated!
 	//
+	
+	public boolean isLeft(int position) {
+		return position < getSplit();
+	}
+	
 	//	isLeft: position
 	//		^position < self split!
 
