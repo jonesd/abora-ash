@@ -15,9 +15,10 @@ import junit.framework.TestSuite;
 public class AllTests extends TestCase {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for org.abora.be.tests");
+		TestSuite suite = new TestSuite("Test for org.abora.ash.engine.tests");
 		//$JUnit-BEGIN$
 		suite.addTest(new TestSuite(IdTest.class));
+		suite.addTest(new TestSuite(AboraConverterTest.class));
 		//$JUnit-END$
 		return suite;
 	}

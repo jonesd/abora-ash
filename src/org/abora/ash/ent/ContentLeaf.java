@@ -26,9 +26,25 @@ public class ContentLeaf extends LeafNode {
 //	!ContentLeaf categoriesForClass!Kernel-Objects! !
 //	!ContentLeaf methodsFor!
 //
+
+	public BeContentElement getContentElement() {
+		return contentElement;
+	}
+
 //	contentElement
 //		^contentElement!
 //
+
+	private void setContentElement(BeContentElement contentElement) {
+		if (this.contentElement != null) {
+			this.contentElement.removeParent(this);
+		}
+		this.contentElement = contentElement;
+		if (contentElement != null) {
+			contentElement.addParent(this);
+		}
+	}
+
 //	contentElement: aContentElement
 //		contentElement notNil ifTrue: [contentElement removeParent: self].
 //		contentElement := aContentElement.
@@ -87,6 +103,11 @@ public int count() {
 //						anotherRegion := leaf globalRegionFor: anotherEditionRevision.
 //						mappings add: (Array with: globalRegion with: anotherRegion)]]!
 //
+
+	public SplitNode splitAbout(int newSplit, int elementsPosition) {
+		throw new UnsupportedOperationException("should not implement");
+	}
+
 //	split: newSplit about: elementsPosition
 //		"Private - Answer a new SplitNode with two data children with elements before and equal and after elementsPosition."
 //
@@ -124,7 +145,7 @@ public int count() {
 
 public ContentLeaf(SequenceNumber branch, int startPosition, BeContentElement contentElement) {
 	super(branch, startPosition);
-	this.contentElement = contentElement;
+	setContentElement(contentElement);
 }
 
 //

@@ -25,7 +25,7 @@ public abstract class ChildNode extends EntNode {
 	protected void removeFromParent(EntNode node) {
 		parents.remove(node);
 	}
-	protected List getParents() {
+	public List getParents() {
 		return parents;
 	}
 	

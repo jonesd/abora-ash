@@ -16,10 +16,6 @@ public class CollectionLeaf extends LeafNode {
 	protected BeCollectionHolder collectionHolder;
 	protected IntegerRegion collectionRegion;
 	
-	public CollectionLeaf(SequenceNumber branch, int startPosition, byte[] contents) {
-		super(branch, startPosition);
-		//@todo
-	}
 //	"Filed out from Dolphin Smalltalk 2002 release 5.00"!
 //
 //	LeafNode subclass: #CollectionLeaf
@@ -113,6 +109,16 @@ public int count() {
 //											extent: intersection extent.
 //								mappings add: (Array with: selfRegion with: anotherRegion)]]]!
 //
+
+protected SplitNode splitAbout(int newSplit, int elementsPosition) {
+	if (elementsPosition < 1 || elementsPosition >= count()) {
+		throw new IndexOutOfBoundsException(String.valueOf(elementsPosition));
+	}
+	CollectionLeaf left = new CollectionLeaf(getBranch(), getStartPosition(), collectionHolder, IntegerRegion.startEnd(collectionRegion.getStartPosition(), collectionRegion.getStartPosition()+elementsPosition-1));
+	CollectionLeaf right = new CollectionLeaf(getBranch(), getStartPosition() + elementsPosition - 1, collectionHolder, IntegerRegion.startEnd(collectionRegion.getStartPosition() + elementsPosition - 1, collectionRegion.getEndPosition()));
+	return new SplitNode(getBranch(), newSplit, left, right);
+}
+
 //	split: newSplit about: elementsPosition
 //		"Private - Answer a new SplitNode with two data children with elements before and equal and after elementsPosition."
 //
@@ -173,6 +179,15 @@ public int count() {
 //
 //	!CollectionLeaf class methodsFor!
 //
+
+  public CollectionLeaf(SequenceNumber branch, int startPosition, byte[] contents) {
+  	this(branch, startPosition, new BeCollectionHolder(contents));
+  }
+
+	public CollectionLeaf(SequenceNumber branch, int startPosition, BeCollectionHolder dataCollection) {
+		this(branch, startPosition, dataCollection, IntegerRegion.startExtent(1, dataCollection.count()));
+	}
+
 //	branch: branch startPosition: startPosition collection: dataCollection
 //		^self 
 //			branch: branch
@@ -180,6 +195,13 @@ public int count() {
 //			collection: dataCollection
 //			region: (IntegerRegion startPosition: 1 endPosition: dataCollection collection size)!
 //
+
+	public CollectionLeaf(SequenceNumber branch, int startPosition, BeCollectionHolder collectionHolder, IntegerRegion collectionRegion) {
+		super(branch, startPosition);
+		this.collectionHolder = collectionHolder;
+		this.collectionRegion = collectionRegion;
+	}
+
 //	branch: branch startPosition: startPosition collection: dataCollection region: collectionRegion
 //		^(self basicNew)
 //			branch: branch;

@@ -21,4 +21,8 @@ public class AboraConverter {
 		return s.getBytes();
 	}
 
+	public static String toJavaString(byte[] bytes) {
+		return new String(bytes);
+	}
+
 }

@@ -24,22 +24,28 @@ public class RootNode extends EntNode {
 		this.edition = edition;
 	}
 	public RootNode(BeEdition edition, SequenceNumber branch, ChildNode child) {
-		super(branch);
-		this.edition = edition;
-		this.child = child;
+		this(edition, branch, child, 0);
 	}
 	public RootNode(BeEdition edition, SequenceNumber branch, ChildNode child, int dsp) {
 		super(branch);
 		this.edition = edition;
-		this.child = child;
 		this.dsp = dsp;
+		setChild(child);
 	}
 
 
+	protected void allRoots(List allRoots) {
+		allRoots.add(this);
+	}
 
 //	allRoots: allRoots
 //		allRoots add: self!
 //
+
+	protected int applyDspTo(int position) {
+		return position + invertDsp();
+	}
+
 //	applyDspTo: position
 //		| dspPosition |
 //		dspPosition := position + (self invertDsp).
@@ -55,6 +61,13 @@ protected void assertIsChild(EntNode node) {
 //	assertIsChild: node
 //		self child ~~ node ifTrue: [EntError signal: 'unknown child of root']!
 //
+
+	protected EntNode basicSplayFor(SequenceNumber matchingBranch) {
+		//TODO only called in the case of a single child
+		ensureSameFor(matchingBranch);
+		return getChild();
+	}
+
 //	basicSplayFor: matchingBranch
 //		"only called in the case of a single child"
 //
@@ -91,7 +104,7 @@ protected void assertIsChild(EntNode node) {
 //		#todo.	"reset dsp if nil?"
 //		aNodeOrNil notNil ifTrue: [aNodeOrNil addToParent: self]!
 //
-	protected List children() {
+	public List children() {
 		if (!hasChild())
 			return Collections.EMPTY_LIST;
 		List children = new ArrayList(1);
@@ -139,6 +152,10 @@ protected void assertIsChild(EntNode node) {
 	public int getDsp() {
 		return dsp;
 	}
+	
+	public void setDsp(int dsp) {
+		this.dsp = dsp;
+	}
 //	dsp
 //		^dsp!
 //
@@ -165,7 +182,7 @@ protected int dspForChild(EntNode child) {
 //		self assertIsChild: node.
 //		^self dsp!
 //
-	protected EntNode duplicateFor(SequenceNumber newBranch) throws NonSameBranchException {
+	public EntNode duplicateFor(SequenceNumber newBranch) {
 		// Do not duplicate RootNodes at the moment, as this forced to happen on newEdition.
 		// @todo is this the right behaviour - not duplicating?
 		ensureSameFor(newBranch);
@@ -212,6 +229,27 @@ protected int dspForChild(EntNode child) {
 //
 //		self dsp: 0.!
 //
+
+
+  public void insert(LeafNode leaf) {
+  	//TODO what abut dsp?
+	  ensureSameFor(leaf.getBranch());
+	  if (hasChild()) {
+	  	child.insertLeaf(leaf, applyDspTo(leaf.getStartPosition()), this);
+	  } else {
+	  	//TODO review this default location of 1
+	  	if (leaf.getStartPosition() == 0) {
+	  		setChild(leaf);
+	  	} else {
+	  		throw new IndexOutOfBoundsException(String.valueOf(leaf.getStartPosition()));
+	  	}
+	  } 
+  }
+
+	public void insertLeaf(LeafNode leaf, int position, RootNode root) {
+		throw new UnsupportedOperationException();
+	}
+
 //	insert: dataLeaf
 //		"what about dsp?"
 //
@@ -230,6 +268,11 @@ protected int dspForChild(EntNode child) {
 //					at: (self applyDspTo: dataLeaf startPosition)
 //					root: self]!
 //
+
+	protected int invertDsp() {
+		return -dsp;
+	}
+
 //	invertDsp
 //		^dsp negated!
 //

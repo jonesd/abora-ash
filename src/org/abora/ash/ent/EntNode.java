@@ -6,6 +6,7 @@
 
 package org.abora.ash.ent;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,26 +23,54 @@ public abstract class EntNode extends AboraObject {
 
 	protected abstract void addToParent(EntNode node);
 
+	public List allEditions() {
+		List roots = allRoots();
+		List editions = new ArrayList(roots.size());
+		for (Iterator iter = roots.iterator(); iter.hasNext();) {
+			RootNode root = (RootNode) iter.next();
+			editions.add(root.getEdition());
+		}
+		return editions;
+	}
+
 //	allEditions
 //		^self allRoots collect: [:root | root edition]!
 //
+
+	public List allRoots() {
+		List roots = new ArrayList();
+		allRoots(roots);
+		return roots;
+	}
+
 //	allRoots
 //		| roots |
 //		roots := IdentitySet new.
 //		self allRoots: roots.
 //		^roots!
 //
+
+	protected void allRoots(List allRoots) {
+		for (Iterator iter = getParents().iterator(); iter.hasNext();) {
+			EntNode node = (EntNode) iter.next();
+			node.allRoots(allRoots);
+		}
+	}
+
 //	allRoots: allRoots
 //		self parents do: [:parent | parent allRoots: allRoots]!
 //
 
-	protected EntNode basicParentSplit() {
+	protected SplitNode basicParentSplit() {
 		return null;
 	}
 
 //	basicParentSplit
 //		^nil!
 //
+
+	protected abstract EntNode basicSplayFor(SequenceNumber matchingBranch);
+
 	public SequenceNumber getBranch() {
 		return branch;
 	}
@@ -53,7 +82,7 @@ public abstract class EntNode extends AboraObject {
 //		branch := anObject!
 //
 
-	protected abstract List children();
+	public abstract List children();
 
 //	children
 //		self subclassResponsibility!
@@ -87,7 +116,7 @@ public abstract class EntNode extends AboraObject {
 	
 	protected abstract void setDspForChild(int dsp, EntNode child);
 
-	protected abstract EntNode duplicateFor(SequenceNumber newBranch) throws EntException;
+	public abstract EntNode duplicateFor(SequenceNumber newBranch) throws EntException;
 	
 //	duplicateFor: newBranch
 //		self subclassResponsibility!
@@ -149,6 +178,9 @@ protected EntNode findBestParentMatchFor(SequenceNumber matchingBranch) {
 //						ifTrue: [singleParent := possibleParent]].
 //		^singleParent!
 //
+
+  	public abstract void insertLeaf(LeafNode leaf, int position, RootNode root);
+
 	protected boolean isCompatibleFor(SequenceNumber matchingBranch) {
 		return branch.isBranchingBeforeOrEqual(matchingBranch);
 	}
@@ -181,11 +213,21 @@ protected EntNode findBestParentMatchFor(SequenceNumber matchingBranch) {
 //		^self children first minNode!
 //
 
-	protected abstract List getParents();
+	public abstract List getParents();
 
 //	parents
 //		self subclassResponsibility!
 //
+
+	protected SplitNode parentSplit(SequenceNumber matchingBranch) {
+		EntNode parent = singleParentFor(matchingBranch);
+		if (parent != null) {
+			return parent.basicParentSplit();
+		} else {
+			return null;
+		}
+	}
+
 //	parentSplit: matchingBranch
 //		| parent |
 //		parent := self singleParentFor: matchingBranch.

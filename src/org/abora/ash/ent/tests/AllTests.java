@@ -17,8 +17,10 @@ public class AllTests extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for org.abora.be.ent.tests");
 		//$JUnit-BEGIN$
-		suite.addTest(new TestSuite(SequenceNumberTest.class));
+		suite.addTest(new TestSuite(CollectionLeafTest.class));
+		suite.addTest(new TestSuite(ContentLeafTest.class));
 		suite.addTest(new TestSuite(RootNodeTest.class));
+		suite.addTest(new TestSuite(SequenceNumberTest.class));
 		//$JUnit-END$
 		return suite;
 	}

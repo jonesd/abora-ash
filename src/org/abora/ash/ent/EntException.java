@@ -6,11 +6,10 @@
 
 package org.abora.ash.ent;
 
-import org.abora.ash.engine.AboraException;
 
 /**
  */
-public class EntException extends AboraException {
+public class EntException extends RuntimeException {
 
 	/**
 	 * Constructor for EntException.
