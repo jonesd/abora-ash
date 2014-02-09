@@ -9,6 +9,8 @@ model.
 **Note:** This project is from 2003 and there has been little work on it since then other
 than to migrate it to GitHub.
 
+For more information on Abora see: http://abora.dgjones.info/
+
 David Jones david@dgjones.info 
 
 
